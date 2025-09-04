@@ -139,6 +139,38 @@ void loop() {
     setTimeout(() => (elCopy.textContent = "Copiar"), 900);
   });
 
+
+  terminarBtn.addEventListener("click", () => {
+    const calificacion = localStorage.getItem("lastCalificacion") ?? 0;
+    const token = new URLSearchParams(window.location.search).get("token") ?? "";
+
+    if (!token) {
+      alert("Token no encontrado. No se puede enviar la calificación.");
+      return;
+    }
+
+    fetch(`https://pruebamoodle-production.up.railway.app/api/calificar_moodle`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token, nota: Number(calificacion) }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          alert("Calificación enviada exitosamente.");
+          terminarBtn.setAttribute("disabled", "true");
+        } else {
+          alert("Error al enviar la calificación. Intenta nuevamente.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error al enviar la calificación:", error);
+        alert("Error al enviar la calificación. Intenta nuevamente.");
+      });
+  });
+
   
   function minifyCode(code) {
     return (

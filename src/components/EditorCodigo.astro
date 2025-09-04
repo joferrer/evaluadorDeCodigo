@@ -1,0 +1,256 @@
+---
+// src/pages/editor.astro
+
+//TODO: El componente debe recibir props que tenga el enunciado y el id de la prueba para enviarlo al servidor de evaluacion.
+
+const { id } = Astro.props;
+---
+
+<div class="flex flex-col content-between gap-4 p-4 md:p-6 max-w-7xl">
+  <section class="grid grid-cols-1 gap-4">
+    <div class="xl:col-span-2 flex flex-col gap-3 w-full">
+      <div class="flex flex-wrap items-center gap-2 w-full text-sm">
+        <button
+          id="copyBtn"
+          class="px-3 py-2 rounded-xl border border-neutral-700 bg-neutral-800 hover:bg-neutral-700"
+          >Copiar</button
+        >
+
+        <button
+          id="runBtn"
+          data-id={id}
+          class="px-3 py-2 rounded-xl border border-amber-700 bg-neutral-800 hover:bg-neutral-700"
+          >Evaluar ▶️</button
+        >
+        <button
+          id="terminarBtn"
+          disabled
+          class="px-3 py-2 rounded-xl border border-green-700 bg-neutral-800 hover:bg-neutral-700 disabled:border-gray-900 disabled:text-gray-600 disabled:cursor-not-allowed"
+          >Terminar prueba</button
+        >
+        <span id="bestTry" class="text-xs text-amber-400 ml-auto"
+          >Mejor intento: </span
+        >
+      </div>
+
+      <div
+        id="editor"
+        class="rounded-2xl border border-neutral-700 bg-[#282c34] h-80 w-full overflow-auto"
+      >
+      </div>
+    </div>
+    <p class="text-xs text-neutral-400">
+      Editor impulsado por CodeMirror 6 para C++.
+    </p>
+  </section>
+
+  <div class="xl:col-span-1 flex flex-col gap-3">
+    <div
+      id="resultadoBox"
+      class="rounded-2xl border border-neutral-700 bg-neutral-900 p-3"
+    >
+      <h2 class="font-medium mb-2">Resultado</h2>
+      <iframe
+        id="preview"
+        class="w-full h-[220px] rounded-xl border border-neutral-700 bg-black text-white"
+        title="Vista previa"></iframe>
+      <p class="text-xs text-neutral-400 mt-2">
+        Evalua código C++ usando el botón "Evaluar".
+      </p>
+      <!-- //TODO: Hacer el boton para terminar la prueba y enviar la maxima puntuacion al moodle. -->
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { EditorState, Compartment } from "https://esm.sh/@codemirror/state";
+  import {
+    EditorView,
+    keymap,
+    lineNumbers,
+    highlightActiveLine,
+  } from "https://esm.sh/@codemirror/view";
+  import {
+    defaultKeymap,
+    history,
+    historyKeymap,
+    indentWithTab,
+  } from "https://esm.sh/@codemirror/commands";
+  import { oneDark } from "https://esm.sh/@codemirror/theme-one-dark";
+  import { cpp } from "https://esm.sh/@codemirror/lang-cpp";
+
+  const elEditor = document.getElementById("editor");
+  const elCopy = document.getElementById("copyBtn");
+  const terminarBtn = document.getElementById("terminarBtn");
+  const elRun = document.getElementById("runBtn");
+  const elPreview = document.getElementById("preview");
+  const elBestTry = document.getElementById("bestTry");
+  const resultadoBox = document.getElementById("resultadoBox");
+
+  const languageConf = new Compartment();
+  const themeConf = new Compartment();
+
+  const sample = `void setup() {
+  // put your setup code here, to run once:
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+}
+`;
+
+  const initialDoc = localStorage.getItem("editor.doc") || sample;
+
+  const state = EditorState.create({
+    doc: initialDoc,
+    extensions: [
+      lineNumbers(),
+      highlightActiveLine(),
+      history(),
+      keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
+      themeConf.of(oneDark),
+      languageConf.of(cpp()),
+    ],
+  });
+
+  const lastCalificacion = localStorage.getItem("lastCalificacion");
+    if (
+      lastCalificacion 
+    )  {
+      elBestTry.textContent = `Mejor intento: ${Math.round(lastCalificacion * 100) ?? 0} pts`;
+      terminarBtn.removeAttribute("disabled");
+    }
+
+  const view = new EditorView({ state, parent: elEditor });
+
+  // Guardado local con Ctrl/Cmd+S
+  window.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+      e.preventDefault();
+      localStorage.setItem("editor.doc", view.state.doc.toString());
+    }
+  });
+
+  elCopy.addEventListener("click", async () => {
+    await navigator.clipboard.writeText(view.state.doc.toString());
+    elCopy.textContent = "Copiado";
+    setTimeout(() => (elCopy.textContent = "Copiar"), 900);
+  });
+
+  
+  function minifyCode(code) {
+    return (
+      code
+        // 1. eliminar comentarios de línea
+        .replace(/\/\/.*$/gm, "")
+        // 2. eliminar comentarios multilínea /* ... */
+        .replace(/\/\*[\s\S]*?\*\//g, "")
+        // 3. eliminar espacios al inicio y final de cada línea
+        .split("\n")
+        .map((line) => line.trim())
+        .join("\n")
+        // 4. quitar líneas vacías
+        .replace(/\n{2,}/g, "\n")
+        // 5. opcional: colapsar todo en una sola línea
+        .replace(/\s*\n\s*/g, "")
+    );
+  }
+
+  elRun.addEventListener("click", async () => {
+    resultadoBox.classList.add("animate-border");
+    elPreview.srcdoc = `<pre style=\"color:white;background:black;padding:1rem;font-family:monospace;white-space:pre-wrap;\">Evaluando...</pre>`;
+
+    const code = minifyCode(view.state.doc.toString());
+    const id = elRun.dataset.id;
+
+    if (!code) {
+      elPreview.srcdoc = `<pre style=\"color:white;background:black;padding:1rem;font-family:monospace;white-space:pre-wrap;\">Por favor, escribe algo de código antes de evaluar.</pre>`;
+      resultadoBox.classList.remove("animate-border");
+      resultadoBox.classList.add("border-neutral-700");
+      return;
+    }
+
+    const lastCode = localStorage.getItem("lastCode");
+
+    // Si el código es igual al anterior, no lo enviamos
+    if (lastCode && lastCode === code) {
+
+      const lastResultOnLocal = localStorage.getItem("lastResult");
+      const lastResult = lastResultOnLocal ? JSON.parse(lastResultOnLocal) : null;
+
+      elPreview.srcdoc = `<pre style="color:orange;background:black;padding:1rem;font-family:monospace;white-space:pre-wrap;">
+⚠️ El código no cambió, no se volvió a enviar.
+Último resultado: 
+ Calificacion: ${Math.round(lastResult?.calificacion * 100) ?? 0} 
+ Comentario: ${lastResult?.comentario}
+</pre>`;
+      resultadoBox.classList.remove("animate-border");
+      resultadoBox.classList.add("border-neutral-700");
+      return;
+    }
+
+    localStorage.setItem("lastCode", code);
+
+    const respuesta = await fetch(`https://pruebamoodle-production.up.railway.app/api/calificar`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ codigo: code, idPrueba: id }),
+    });
+
+    const resultado = await respuesta.json();
+
+    if (
+      !resultado.calificacion ||
+      resultado.calificacion < 0 ||
+      resultado.calificacion > 1
+    ) {
+      elPreview.srcdoc = `<pre style=\"color:red;background:black;padding:1rem;font-family:monospace;white-space:pre-wrap;\">Error en la evaluación. Intenta nuevamente más tarde.</pre>`;
+      console.error("Respuesta inválida del servidor:", resultado);
+      resultadoBox.classList.remove("animate-border");
+      resultadoBox.classList.add("border-neutral-700");
+      localStorage.removeItem("lastCode");
+      return;
+    }
+
+    elPreview.srcdoc = `<pre style=\"color:white;background:black;padding:1rem;font-family:monospace;white-space:pre-wrap;\">Resultados...\n\n Calificacion: ${Math.round(resultado?.calificacion * 100) ?? 0} \n\n Comentario: ${resultado?.comentario}</pre>`;
+
+    const lastCalificacion = localStorage.getItem("lastCalificacion");
+    if (
+      !lastCalificacion ||
+      Number(lastCalificacion) <= resultado?.calificacion
+    ) {
+      localStorage.setItem("lastCalificacion", resultado?.calificacion);
+      elBestTry.textContent = `Mejor intento: ${Math.round(resultado?.calificacion * 100) ?? 0} pts`;
+    }
+
+    localStorage.setItem("lastResult", JSON.stringify(resultado));
+
+    terminarBtn.removeAttribute("disabled");
+    resultadoBox.classList.remove("animate-border");
+    resultadoBox.classList.add("border-neutral-700");
+  });
+
+  //TODO: Hacer el evento para terminar la prueba y enviar la maxima puntuacion al moodle.
+</script>
+
+<style>
+  @keyframes borderPulse {
+    0% {
+      border-color: rgb(132 204 22);
+    } /* green-500 */
+    50% {
+      border-color: rgb(251 191 36);
+    } /* amber-400 */
+    100% {
+      border-color: rgb(132 204 22);
+    } /* green-500 */
+  }
+
+  .animate-border {
+    animation: borderPulse 1.5s linear infinite;
+  }
+</style>

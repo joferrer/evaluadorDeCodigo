@@ -1,0 +1,72 @@
+---
+import { getCollection } from "astro:content";
+import EditorCodigo from "../../components/EditorCodigo.astro";
+import { render } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+export async function getStaticPaths() {
+    const pruebas = await getCollection("pruebas");
+
+    return pruebas.map((prueba) => ({
+        params: { id: prueba.slug },
+        props: { prueba },
+    }));
+}
+
+const { prueba } = Astro.props;
+const { id, title, img } = prueba.data;
+const { Content } = await render(prueba);
+
+---
+
+<Layout title={title}>
+    <div class="flex w-full gap-4 h-full p-1">
+        <div
+            class="flex flex-col h-full w-full p-10 overflow-y-scroll cool-scroll"
+        >
+            <h1 class="text-3xl underline">
+                <!-- //TODO: El enunciado se trae de un md. -->
+                <h1 class="text-2xl font-bold mb-4">{title}</h1>
+
+                <div class="text-white prose prose-invert prose-strong:text-amber-400">
+
+                    <Content />
+                </div>
+                <img
+                    src=`/schemas/${img}`
+                    alt="Imagen representativa de la prueba"
+                    class="my-4 rounded-lg max-w-lg self-center"
+                />
+            </h1>
+        </div>
+
+        <div class="h-full w-full flex flex-col">
+            <EditorCodigo id={id} />
+        </div>
+    </div>
+</Layout>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+
+    
+</script>
+
+<style>
+    .cool-scroll::-webkit-scrollbar {
+        width: 8px;
+    }
+    .cool-scroll::-webkit-scrollbar-track {
+        background: #1e1e1e; /* track oscuro */
+        border-radius: 8px;
+    }
+    .cool-scroll::-webkit-scrollbar-thumb {
+        background: #4b5563; /* gris medio */
+        border-radius: 8px;
+    }
+    .cool-scroll::-webkit-scrollbar-thumb:hover {
+        background: #6b7280; /* gris más claro al hover */
+    }
+</style>

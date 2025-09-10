@@ -20,7 +20,7 @@
         else {
             try {
                 const response = await fetch(
-                    "http://localhost:3000/api/tiempo_restante",
+                    "https://pruebamoodle-production.up.railway.app/api/tiempo_restante",
                     {
                         method: "POST",
                         headers: {
@@ -30,7 +30,7 @@
                     },
                 );
                 const data = await response.json();
-                return !data.tiempoRestante ? 60 * 60 : data.tiempoRestante;
+                return !data.tiempoRestante ? 60 * 60 : Number(data.tiempoRestante);
             } catch (e) {
                 console.error("Error al obtener el tiempo restante:", e);
                 return 60 * 60;

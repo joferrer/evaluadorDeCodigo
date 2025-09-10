@@ -59,7 +59,8 @@ const { Content } = await render(prueba);
         // Limpiar la URL para que no se vea el token
         window.history.replaceState({}, document.title, window.location.pathname);
     }
-    else {
+    
+    if(!sessionStorage.getItem("token")){
         alert("No podrás guardar tu progreso si no iniciaste la prueba desde el curso en Virtual Pregrado . Si quieres guardar tu progreso, vuelve a iniciar la prueba desde la plataforma.");
     }
 

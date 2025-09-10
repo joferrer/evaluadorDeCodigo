@@ -1,0 +1,83 @@
+---
+
+---
+
+<div
+    id="countdown"
+    class="fixed bottom-15 right-4 bg-gray-900/80 hover:bg-gray-900/40 transition-colors duration-300 text-white px-4 py-2 rounded-xl shadow-lg font-mono text-lg"
+>
+    ⏳ Tiempo restante: --
+</div>
+
+<script>
+    // Aquí defines los segundos que te devuelve tu función duracionRestanteTokenLTI
+
+    const countdownEl = document.getElementById("countdown");
+    const token = sessionStorage.getItem("token");
+
+    const getTiempoRestante = async () => {
+        if (!token) return 60 * 60;
+        else {
+            try {
+                const response = await fetch(
+                    "http://localhost:3000/api/tiempo_restante",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ token }),
+                    },
+                );
+                const data = await response.json();
+                return !data.tiempoRestante ? 60 * 60 : data.tiempoRestante;
+            } catch (e) {
+                console.error("Error al obtener el tiempo restante:", e);
+                return 60 * 60;
+            }
+        }
+    };
+
+    let timeLeft = !token ? 5 : await getTiempoRestante(); //TODO: Ese await no creo que funcione fuera de una función async.
+
+    function updateCountdown() {
+        if (!countdownEl) return;
+
+        if (timeLeft <= 0) {
+            countdownEl.textContent = "⏳ Tiempo finalizado";
+            clearInterval(timer);
+            return;
+        }
+        const minutes = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+
+        countdownEl.textContent = `⏳ Tiempo restante: ${minutes}:${secs
+            .toString()
+            .padStart(2, "0")}`;
+
+        if (timeLeft <= 60) {
+            countdownEl.classList.remove("border-transparent");
+            countdownEl.classList.add("border");
+            countdownEl.classList.add("animate-border");
+        }
+        timeLeft--;
+    }
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+</script>
+
+<style>
+    @keyframes pulse-border {
+        0%,
+        100% {
+            border-color: rgba(239, 68, 68, 1); /* red-500 */
+        }
+        50% {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+    }
+    .animate-border {
+        animation: pulse-border 1s infinite;
+    }
+</style>

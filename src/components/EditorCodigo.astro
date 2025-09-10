@@ -55,9 +55,8 @@ const { id } = Astro.props;
         class="w-full h-[220px] rounded-xl border border-neutral-700 bg-black text-white"
         title="Vista previa"></iframe>
       <p class="text-xs text-neutral-400 mt-2">
-        Evalua código C++ usando el botón "Evaluar".
+        Evalua código usando el botón "Evaluar".
       </p>
-      <!-- //TODO: Hacer el boton para terminar la prueba y enviar la maxima puntuacion al moodle. -->
     </div>
   </div>
 </div>
@@ -117,7 +116,7 @@ void loop() {
 
   const lastCalificacion = localStorage.getItem("lastCalificacion");
     if (
-      lastCalificacion 
+      lastCalificacion && sessionStorage.getItem("token")
     )  {
       elBestTry.textContent = `Mejor intento: ${Math.round(lastCalificacion * 100) ?? 0} pts`;
       terminarBtn.removeAttribute("disabled");
@@ -142,10 +141,10 @@ void loop() {
 
   terminarBtn.addEventListener("click", () => {
     const calificacion = localStorage.getItem("lastCalificacion") ?? 0;
-    const token = new URLSearchParams(window.location.search).get("token") ?? "";
+    const token = sessionStorage.getItem("token");
 
     if (!token) {
-      alert("Token no encontrado. No se puede enviar la calificación.");
+      alert("No pudimos enviar tu calificación porque esta prueba no fue iniciada correctamente desde tu curso en Virtual Pregrado. \n\nPor favor, regresa al curso y vuelve a iniciar la prueba desde allí.");
       return;
     }
 

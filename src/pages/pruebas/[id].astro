@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import EditorCodigo from "../../components/EditorCodigo.astro";
 import { render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
+import Contador from "@/components/Contador.astro";
 
 export async function getStaticPaths() {
     const pruebas = await getCollection("pruebas");
@@ -16,6 +17,7 @@ export async function getStaticPaths() {
 const { prueba } = Astro.props;
 const { id, title, img } = prueba.data;
 const { Content } = await render(prueba);
+
 
 ---
 
@@ -43,6 +45,8 @@ const { Content } = await render(prueba);
         <div class="h-full w-full flex flex-col">
             <EditorCodigo id={id} />
         </div>
+        
+        <Contador />
     </div>
 </Layout>
 
@@ -50,6 +54,14 @@ const { Content } = await render(prueba);
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
 
+    if(token){
+        sessionStorage.setItem("token", token);
+        // Limpiar la URL para que no se vea el token
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    else {
+        alert("No podrás guardar tu progreso si no iniciaste la prueba desde el curso en Virtual Pregrado . Si quieres guardar tu progreso, vuelve a iniciar la prueba desde la plataforma.");
+    }
 
     
 </script>

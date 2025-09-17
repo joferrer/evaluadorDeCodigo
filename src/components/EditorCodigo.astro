@@ -223,7 +223,8 @@ void loop() {
     }
 
     localStorage.setItem("lastCode", code);
-
+    //http://localhost:3000/api/calificar
+    //https://pruebamoodle-production.up.railway.app/api/calificar
     const respuesta = await fetch(`https://pruebamoodle-production.up.railway.app/api/calificar`, {
       method: "POST",
       headers: {

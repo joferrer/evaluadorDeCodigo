@@ -3,6 +3,19 @@ id: peticion-http-code
 title: Haciendo POST
 testDuration: 60
 description: Construye un buena petición POST en arduino.
+codigoBase: |
+  #include <HTTPClient.h>
+
+  const char* serverUrl = "URL"; //TODO
+
+  void registrarRiego() {
+    if (WiFi.status() == WL_CONNECTED) {
+      //TODO --> COMPLETA EL METODO.
+
+    } else {
+      Serial.println("Error: WiFi no conectado");
+    }
+  }
 ---
 
 Observa el endpoint de la API y base a el **construye una correcta petición http al servidor**. El servidor espera recibir una petición POST con un JSON en el cuerpo con la siguiente estructura:
@@ -28,7 +41,24 @@ Sea la peticion correcta o no el servidor responderá con un JSON con la siguien
 }
 ```
 
-Pero si la petición no puede ni siquiera conectarse al servidor, **el response code será -1**. Tu tarea es construir la petición e imprimir en el monitor serial la respuesta del servidor o mensaje de error si la petición no se ha podido completar. 
+Pero si la petición no puede ni siquiera conectarse al servidor, **el response code será -1**. Tu tarea es **completar el método registrarRiego()** que debe construir la petición e imprimir en el monitor serial la respuesta del servidor o mensaje de error si la petición no se ha podido completar. 
+
+```cpp
+
+#include <HTTPClient.h>
+
+const char* serverUrl = "URL"; //TODO
+
+void registrarRiego() {
+  if (WiFi.status() == WL_CONNECTED) {
+    //TODO --> COMPLETA EL METODO.
+
+  } else {
+    Serial.println("Error: WiFi no conectado");
+  }
+}
+
+```
 
 Recuerda que la librería que usamos en el curso es la HTTPClient. Los métodos que necesitarás son:
 

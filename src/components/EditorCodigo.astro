@@ -3,7 +3,7 @@
 
 //TODO: El componente debe recibir props que tenga el enunciado y el id de la prueba para enviarlo al servidor de evaluacion.
 
-const { id } = Astro.props;
+const { id, codigoBase} = Astro.props;
 ---
 
 <div class="flex flex-col content-between gap-4 p-4 md:p-6 max-w-7xl">
@@ -35,6 +35,7 @@ const { id } = Astro.props;
 
       <div
         id="editor"
+        data-codigobase={codigoBase}
         class="rounded-2xl border border-neutral-700 bg-[#282c34] h-80 w-full overflow-auto"
       >
       </div>
@@ -89,7 +90,9 @@ const { id } = Astro.props;
   const languageConf = new Compartment();
   const themeConf = new Compartment();
 
-  const sample = `void setup() {
+  const codigoBaseFromAttr = elEditor.getAttribute("data-codigobase");
+
+  const sample = codigoBaseFromAttr || `void setup() {
   // put your setup code here, to run once:
 
 }
@@ -174,8 +177,6 @@ void loop() {
   function minifyCode(code) {
     return (
       code
-        // 1. eliminar comentarios de línea
-        .replace(/\/\/.*$/gm, "")
         // 2. eliminar comentarios multilínea /* ... */
         .replace(/\/\*[\s\S]*?\*\//g, "")
         // 3. eliminar espacios al inicio y final de cada línea

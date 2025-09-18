@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 }
 
 const { prueba } = Astro.props;
-const { id, title, img } = prueba.data;
+const { id, title, img , codigoBase} = prueba.data;
 const { Content } = await render(prueba);
 console.log(img)
 
@@ -45,7 +45,7 @@ console.log(img)
         </div>
 
         <div class="h-full w-full flex flex-col">
-            <EditorCodigo id={id} />
+            <EditorCodigo id={id} codigoBase={codigoBase} />
         </div>
         
         <Contador />

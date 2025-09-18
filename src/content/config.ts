@@ -7,6 +7,7 @@ const pruebasCollection = defineCollection({
         description: z.string().optional(),
         testDuration: z.number().default(120),
         img: z.string().optional(),
+        codigoBase: z.string().optional(),
 
     }),
 })

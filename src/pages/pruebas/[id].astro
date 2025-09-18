@@ -17,7 +17,7 @@ export async function getStaticPaths() {
 const { prueba } = Astro.props;
 const { id, title, img } = prueba.data;
 const { Content } = await render(prueba);
-
+console.log(img)
 
 ---
 
@@ -34,11 +34,13 @@ const { Content } = await render(prueba);
 
                     <Content />
                 </div>
-                <img
+                {
+                    img && <img
                     src=`/schemas/${img}`
                     alt="Imagen representativa de la prueba"
                     class="my-4 rounded-lg max-w-lg self-center"
                 />
+                }
             </h1>
         </div>
 

@@ -1,7 +1,6 @@
 ---
 // src/pages/editor.astro
 
-//TODO: El componente debe recibir props que tenga el enunciado y el id de la prueba para enviarlo al servidor de evaluacion.
 
 const { id, codigoBase} = Astro.props;
 ---
@@ -262,7 +261,7 @@ void loop() {
 
     localStorage.setItem("lastResult", JSON.stringify(resultado));
 
-    terminarBtn.removeAttribute("disabled");
+    
     resultadoBox.classList.remove("animate-border");
     resultadoBox.classList.add("border-neutral-700");
   });

@@ -1,7 +1,7 @@
 ---
 id: bombilla-bluetooth-code
 title: E de encendido y A de apagado 🤓
-img: holamundo-led-small.jpg
+img: bombilla.png
 testDuration: 60
 description: Construye el código de Arduino para apagar y encender una bombilla mediante comandos bluetooth.
 

@@ -17,7 +17,7 @@ export async function getStaticPaths() {
 const { prueba } = Astro.props;
 const { id, title, img , codigoBase} = prueba.data;
 const { Content } = await render(prueba);
-console.log(img)
+
 
 ---
 
@@ -26,8 +26,8 @@ console.log(img)
         <div
             class="flex flex-col h-full w-full p-10 overflow-y-scroll cool-scroll"
         >
-            <h1 class="text-3xl underline">
-                <!-- //TODO: El enunciado se trae de un md. -->
+           
+              
                 <h1 class="text-2xl font-bold mb-4">{title}</h1>
 
                 <div class="text-white prose prose-invert prose-strong:text-amber-400">
@@ -38,10 +38,18 @@ console.log(img)
                     img && <img
                     src=`/schemas/${img}`
                     alt="Imagen representativa de la prueba"
-                    class="my-4 rounded-lg max-w-lg self-center"
+                    class="my-4 rounded-lg max-w-lg self-center cursor-pointer hover:scale-105 transition-transform"
+                    onclick="document.getElementById('zoom-modal').showModal()"
                 />
                 }
-            </h1>
+                <!-- Modal con la imagen -->
+                <dialog id="zoom-modal" class="p-0 bg-transparent m-auto">
+                <img src={`/schemas/${img}`} alt="Zoom" class="max-h-[70vh] mx-auto rounded-lg" />
+                <form method="dialog" class="text-center mt-2">
+                    <button class="px-4 py-2 bg-gray-800 text-white rounded cursor-pointer">Cerrar</button>
+                </form>
+                </dialog>
+            
         </div>
 
         <div class="h-full w-full flex flex-col">

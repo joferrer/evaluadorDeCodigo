@@ -12,10 +12,22 @@
 <script>
     // Aquí defines los segundos que te devuelve tu función duracionRestanteTokenLTI
 
-    const countdownEl = document.getElementById("countdown");
-    const token = sessionStorage.getItem("token");
+    import { set } from "astro:schema";
 
+    const countdownEl = document.getElementById("countdown");
+
+    function getTokenConDelay() {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const token = sessionStorage.getItem("token");
+                if (!token) resolve(null);
+                else resolve(token);
+            }, 5000);
+        });
+    }
     const getTiempoRestante = async () => {
+        const token = await getTokenConDelay();
+
         if (!token) return 60 * 60;
         else {
             try {
@@ -30,7 +42,9 @@
                     },
                 );
                 const data = await response.json();
-                return !data.tiempoRestante ? 60 * 60 : Number(data.tiempoRestante);
+                return !data.tiempoRestante
+                    ? 60 * 60
+                    : Number(data.tiempoRestante);
             } catch (e) {
                 console.error("Error al obtener el tiempo restante:", e);
                 return 60 * 60;
@@ -38,7 +52,7 @@
         }
     };
 
-    let timeLeft = !token ? 5 : await getTiempoRestante(); //TODO: Ese await no creo que funcione fuera de una función async.
+    let timeLeft = await getTiempoRestante(); //TODO: Ese await no creo que funcione fuera de una función async.
 
     function updateCountdown() {
         if (!countdownEl) return;

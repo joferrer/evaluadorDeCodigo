@@ -1,7 +1,7 @@
 ---
 // src/pages/editor.astro
-
-
+import { PUBLIC_API_URL } from "astro:env/client";
+console.log("PUBLIC_API_URL from env:", PUBLIC_API_URL);
 const { id, codigoBase} = Astro.props;
 ---
 
@@ -35,6 +35,7 @@ const { id, codigoBase} = Astro.props;
       <div
         id="editor"
         data-codigobase={codigoBase}
+        data-apiurl={PUBLIC_API_URL}
         class="rounded-2xl border border-neutral-700 bg-[#282c34] h-80 w-full overflow-auto"
       >
       </div>
@@ -78,6 +79,9 @@ const { id, codigoBase} = Astro.props;
   import { oneDark } from "https://esm.sh/@codemirror/theme-one-dark";
   import { cpp } from "https://esm.sh/@codemirror/lang-cpp";
 
+  
+ 
+
   const elEditor = document.getElementById("editor");
   const elCopy = document.getElementById("copyBtn");
   const terminarBtn = document.getElementById("terminarBtn");
@@ -90,6 +94,11 @@ const { id, codigoBase} = Astro.props;
   const themeConf = new Compartment();
 
   const codigoBaseFromAttr = elEditor.getAttribute("data-codigobase");
+   //const PUBLIC_API_URL = elEditor.getAttribute("data-apiurl") || "http://localhost:3000";
+
+
+  const PUBLIC_API_URL  =  window.CONFIG.API_URL || "http://localhost:3000";
+  console.log("API_URL from config.js:", PUBLIC_API_URL);
 
   const sample = codigoBaseFromAttr || `void setup() {
   // put your setup code here, to run once:
@@ -150,7 +159,7 @@ void loop() {
       return;
     }
 
-    fetch(`https://pruebamoodle-production.up.railway.app/api/calificar_moodle`, {
+    fetch(`${PUBLIC_API_URL}/api/calificar_moodle`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -225,7 +234,7 @@ void loop() {
     localStorage.setItem("lastCode", code);
     //http://localhost:3000/api/calificar
     //https://pruebamoodle-production.up.railway.app/api/calificar
-    const respuesta = await fetch(`https://pruebamoodle-production.up.railway.app/api/calificar`, {
+    const respuesta = await fetch(`${PUBLIC_API_URL}/api/calificar`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

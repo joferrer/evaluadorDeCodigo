@@ -1,7 +1,6 @@
 ---
 // src/pages/editor.astro
-import { PUBLIC_API_URL } from "astro:env/client";
-console.log("PUBLIC_API_URL from env:", PUBLIC_API_URL);
+
 const { id, codigoBase} = Astro.props;
 ---
 
@@ -35,7 +34,6 @@ const { id, codigoBase} = Astro.props;
       <div
         id="editor"
         data-codigobase={codigoBase}
-        data-apiurl={PUBLIC_API_URL}
         class="rounded-2xl border border-neutral-700 bg-[#282c34] h-80 w-full overflow-auto"
       >
       </div>

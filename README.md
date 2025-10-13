@@ -4,6 +4,18 @@ Este proyecto corresponde al frontend de una herramienta externa a Moodle, dise�
 
 La aplicación se comunica con un servidor backend encargado de procesar las solicitudes y realizar la evaluación automática del código mediante modelos de lenguaje.
 
+# Índice
+- [Evaluador de código Arduino con Modelos de lenguaje](#Evaluador-de-código-Arduino-con-Modelos-de-lenguaje)
+  - [Tecnologías Principales](#-Tecnologías-Principales)
+  - [Instalación y configuración](#Instalación-y-configuración)
+    - [Requisitos previos](#Requisitos-previos)
+    - [1. Clonar el repositorio](#1-Clonar-el-repositorio)
+    - [2. Instalar dependencias](#2-Instalar-dependencias)
+    - [3. Configuración de la URL del backend](#3-Configuración-de-la-URL-del-backend)
+    - [4. Iniciar el proyecto](#4-Iniciar-el-proyecto)
+  - [🚀 Estructura del proyecto](#🚀-Estructura-del-proyecto)
+  - [🧞 Scripts](#🧞-Scripts)
+
 ## Tecnologías Principales
 
 - ⚡ Astro 5 — Framework moderno para generar sitios rápidos y optimizados.

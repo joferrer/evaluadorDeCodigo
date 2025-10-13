@@ -13,8 +13,8 @@ La aplicación se comunica con un servidor backend encargado de procesar las sol
     - [2. Instalar dependencias](#2-Instalar-dependencias)
     - [3. Configuración de la URL del backend](#3-Configuración-de-la-URL-del-backend)
     - [4. Iniciar el proyecto](#4-Iniciar-el-proyecto)
-  - [🚀 Estructura del proyecto](#🚀-Estructura-del-proyecto)
-  - [🧞 Scripts](#🧞-Scripts)
+  - [🚀 Estructura del proyecto](#-Estructura-del-proyecto)
+  - [🧞 Scripts](#-Scripts)
 
 ## Tecnologías Principales
 

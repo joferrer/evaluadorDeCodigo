@@ -2,9 +2,11 @@
 // src/pages/editor.astro
 
 const { id, codigoBase} = Astro.props;
+import { CONFIG } from "../config";
+
 ---
 
-<div class="flex flex-col content-between gap-4 p-4 md:p-6 max-w-7xl">
+<div id="editor-de-codigo" class="flex flex-col content-between gap-4 p-4 md:p-6 max-w-7xl" data-apiurl={CONFIG.API_URL} >
   <section class="grid grid-cols-1 gap-4">
     <div class="xl:col-span-2 flex flex-col gap-3 w-full">
       <div class="flex flex-wrap items-center gap-2 w-full text-sm">
@@ -79,7 +81,7 @@ const { id, codigoBase} = Astro.props;
 
   
  
-
+  const contenedor = document.getElementById("editor-de-codigo");
   const elEditor = document.getElementById("editor");
   const elCopy = document.getElementById("copyBtn");
   const terminarBtn = document.getElementById("terminarBtn");
@@ -95,7 +97,7 @@ const { id, codigoBase} = Astro.props;
    //const PUBLIC_API_URL = elEditor.getAttribute("data-apiurl") || "http://localhost:3000";
 
 
-  const PUBLIC_API_URL  =  window.CONFIG.API_URL || "http://localhost:3000";
+  const PUBLIC_API_URL  =  contenedor.getAttribute("data-apiurl") || "http://localhost:3000";
   console.log("API_URL from config.js:", PUBLIC_API_URL);
 
   const sample = codigoBaseFromAttr || `void setup() {

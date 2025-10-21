@@ -16,6 +16,10 @@ RUN pnpm install
 # Copiar el resto del código del proyecto
 COPY . .
 
+# Pasar la variable al build
+ARG PUBLIC_API_URL
+ENV PUBLIC_API_URL=$PUBLIC_API_URL
+
 # Construir el proyecto (esto genera /dist)
 RUN pnpm build
 

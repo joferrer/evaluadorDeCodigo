@@ -1,12 +1,15 @@
 ---
 // src/pages/editor.astro
 
-const { id, codigoBase} = Astro.props;
+const { id, codigoBase } = Astro.props;
 import { CONFIG } from "../config";
-
 ---
 
-<div id="editor-de-codigo" class="flex flex-col content-between gap-4 p-4 md:p-6 max-w-7xl" data-apiurl={CONFIG.API_URL} >
+<div
+  id="editor-de-codigo"
+  class="flex flex-col content-between gap-4 p-4 md:p-6 max-w-7xl"
+  data-apiurl={CONFIG.API_URL}
+>
   <section class="grid grid-cols-1 gap-4">
     <div class="xl:col-span-2 flex flex-col gap-3 w-full">
       <div class="flex flex-wrap items-center gap-2 w-full text-sm">
@@ -29,8 +32,8 @@ import { CONFIG } from "../config";
           >Terminar prueba</button
         >
         <span id="bestTry" class="text-xs text-amber-400 ml-auto"
-          >Mejor intento: </span
-        >
+          >Mejor intento:
+        </span>
       </div>
 
       <div
@@ -79,8 +82,6 @@ import { CONFIG } from "../config";
   import { oneDark } from "https://esm.sh/@codemirror/theme-one-dark";
   import { cpp } from "https://esm.sh/@codemirror/lang-cpp";
 
-  
- 
   const contenedor = document.getElementById("editor-de-codigo");
   const elEditor = document.getElementById("editor");
   const elCopy = document.getElementById("copyBtn");
@@ -94,13 +95,15 @@ import { CONFIG } from "../config";
   const themeConf = new Compartment();
 
   const codigoBaseFromAttr = elEditor.getAttribute("data-codigobase");
-   //const PUBLIC_API_URL = elEditor.getAttribute("data-apiurl") || "http://localhost:3000";
+  //const PUBLIC_API_URL = elEditor.getAttribute("data-apiurl") || "http://localhost:3000";
 
-
-  const PUBLIC_API_URL  =  contenedor.getAttribute("data-apiurl") || "http://localhost:3000";
+  const PUBLIC_API_URL =
+    contenedor.getAttribute("data-apiurl") || "http://localhost:3000";
   console.log("API_URL from config.js:", PUBLIC_API_URL);
 
-  const sample = codigoBaseFromAttr || `void setup() {
+  const sample =
+    codigoBaseFromAttr ||
+    `void setup() {
   // put your setup code here, to run once:
 
 }
@@ -126,12 +129,10 @@ void loop() {
   });
 
   const lastCalificacion = localStorage.getItem("lastCalificacion");
-    if (
-      lastCalificacion && sessionStorage.getItem("token")
-    )  {
-      elBestTry.textContent = `Mejor intento: ${Math.round(lastCalificacion * 100) ?? 0} pts`;
-      terminarBtn.removeAttribute("disabled");
-    }
+  if (lastCalificacion && sessionStorage.getItem("token")) {
+    elBestTry.textContent = `Mejor intento: ${Math.round(lastCalificacion * 100) ?? 0} pts`;
+    terminarBtn.removeAttribute("disabled");
+  }
 
   const view = new EditorView({ state, parent: elEditor });
 
@@ -149,13 +150,14 @@ void loop() {
     setTimeout(() => (elCopy.textContent = "Copiar"), 900);
   });
 
-
   terminarBtn.addEventListener("click", () => {
     const calificacion = localStorage.getItem("lastCalificacion") ?? 0;
     const token = sessionStorage.getItem("token");
 
     if (!token) {
-      alert("No pudimos enviar tu calificación porque esta prueba no fue iniciada correctamente desde tu curso en Virtual Pregrado. \n\nPor favor, regresa al curso y vuelve a iniciar la prueba desde allí.");
+      alert(
+        "No pudimos enviar tu calificación porque esta prueba no fue iniciada correctamente desde tu curso en Virtual Pregrado. \n\nPor favor, regresa al curso y vuelve a iniciar la prueba desde allí.",
+      );
       return;
     }
 
@@ -181,7 +183,6 @@ void loop() {
       });
   });
 
-  
   function minifyCode(code) {
     return (
       code
@@ -216,9 +217,10 @@ void loop() {
 
     // Si el código es igual al anterior, no lo enviamos
     if (lastCode && lastCode === code) {
-
       const lastResultOnLocal = localStorage.getItem("lastResult");
-      const lastResult = lastResultOnLocal ? JSON.parse(lastResultOnLocal) : null;
+      const lastResult = lastResultOnLocal
+        ? JSON.parse(lastResultOnLocal)
+        : null;
 
       elPreview.srcdoc = `<pre style="color:orange;background:black;padding:1rem;font-family:monospace;white-space:pre-wrap;">
 ⚠️ El código no cambió, no se volvió a enviar.
@@ -245,7 +247,7 @@ void loop() {
     const resultado = await respuesta.json();
 
     if (
-      (!("calificacion" in resultado)) ||
+      !("calificacion" in resultado) ||
       resultado.calificacion < 0 ||
       resultado.calificacion > 1
     ) {
@@ -270,9 +272,16 @@ void loop() {
 
     localStorage.setItem("lastResult", JSON.stringify(resultado));
 
-    
     resultadoBox.classList.remove("animate-border");
     resultadoBox.classList.add("border-neutral-700");
+
+    if (
+      lastCalificacion &&
+      sessionStorage.getItem("token") &&
+      Number(lastCalificacion) >= 50
+    ) {
+      terminarBtn.removeAttribute("disabled");
+    }
   });
 
   //TODO: Hacer el evento para terminar la prueba y enviar la maxima puntuacion al moodle.

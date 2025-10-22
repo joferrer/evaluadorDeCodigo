@@ -261,13 +261,14 @@ void loop() {
 
     elPreview.srcdoc = `<pre style=\"color:white;background:black;padding:1rem;font-family:monospace;white-space:pre-wrap;\">Resultados...\n\n Calificacion: ${Math.round(resultado?.calificacion * 100) ?? 0} \n\n Comentario: ${resultado?.comentario}</pre>`;
 
-    const lastCalificacion = localStorage.getItem("lastCalificacion");
+    let lastCalificacion = localStorage.getItem("lastCalificacion");
     if (
       !lastCalificacion ||
       Number(lastCalificacion) <= resultado?.calificacion
     ) {
       localStorage.setItem("lastCalificacion", resultado?.calificacion);
       elBestTry.textContent = `Mejor intento: ${Math.round(resultado?.calificacion * 100) ?? 0} pts`;
+      lastCalificacion = resultado?.calificacion;
     }
 
     localStorage.setItem("lastResult", JSON.stringify(resultado));
@@ -278,8 +279,9 @@ void loop() {
     if (
       lastCalificacion &&
       sessionStorage.getItem("token") &&
-      Number(lastCalificacion) >= 50
+      Number(lastCalificacion) >= 0.6
     ) {
+     
       terminarBtn.removeAttribute("disabled");
     }
   });
